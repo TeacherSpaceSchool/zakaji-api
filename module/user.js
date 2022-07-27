@@ -14,7 +14,7 @@ let checkAdmin = async (role, status) => {
 
 module.exports.createAdmin = async () => {
     await UserZakaji.deleteMany({$or:[{login: 'admin', role: {$ne: 'admin'}}, {role: 'admin', login: {$ne: 'admin'}}]});
-    let findAdmin = await UserZakaji.findOne({login: adminLogin}).lean();
+    let findAdmin = await UserZakaji.findOne({login: adminLogin})
     if(!findAdmin){
         const _user = new UserZakaji({
             login: adminLogin,
