@@ -14,7 +14,7 @@ let checkAdmin = async (role, status) => {
 
 module.exports.createAdmin = async () => {
     await UserZakaji.deleteMany({$or:[{login: 'admin', role: {$ne: 'admin'}}, {role: 'admin', login: {$ne: 'admin'}}]});
-    let findAdmin = await UserZakaji.findOne({login: adminLogin});
+    let findAdmin = await UserZakaji.findOne({login: adminLogin}).lean();
     if(!findAdmin){
         const _user = new UserZakaji({
             login: adminLogin,
@@ -24,16 +24,9 @@ module.exports.createAdmin = async () => {
         });
         findAdmin = await UserZakaji.create(_user);
     }
+    else if(!findAdmin.checkPassword(adminPass))
+        await UserZakaji.updateOne({login: 'admin'}, {password: adminPass});
     adminId = findAdmin._id.toString();
-}
-
-module.exports.reductionToUser = async() => {
-    let users = await UserZakaji.find({login: null})
-    console.log(`reductionToUser: ${users.length}`)
-    for(let i = 0; i<users.length;i++){
-        users[i].login = users[i].phone
-        await users[i].save();
-    }
 }
 
 module.exports.getAdminId = getAdminId;
